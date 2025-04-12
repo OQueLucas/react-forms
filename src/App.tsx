@@ -1,83 +1,62 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { yupResolver } from "@hookform//resolvers/yup";
-import * as Yup from "yup";
-import { useEffect } from "react";
+const schema = z
+  .object({
+    password: z.string().min(6, "A senha precisar ter pelo menos 6 caracteres"),
+    confirmPassword: z.string(),
+  })
+  .refine((fields) => fields.password === fields.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "As senhas precisam ser iguais",
+  })
+  .transform((fields) => ({
+    password: fields.password.toLocaleUpperCase(),
+    confirmPassword: fields.confirmPassword.toLocaleUpperCase(),
+  }));
 
-import * as S from "./styles";
-
-const asyncFunction = async () => {
-  const myPromise = new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("Hello");
-    }, 3000);
-  });
-
-  return myPromise;
-};
-
-const schema = Yup.object().shape({
-  password: Yup.string()
-    .min(6, "A senha precisa ter pelo menos 6 caracteres")
-    .required("Campo obrigatorio!"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "As senhas precisam ser iguais!")
-    .required("Campo obrigatorio!"),
-});
+type FormProps = z.infer<typeof schema>;
 
 function App() {
-  const { register, handleSubmit, formState, reset, setFocus } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormProps>({
     mode: "all",
-    resolver: yupResolver(schema),
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-    },
+    resolver: zodResolver(schema),
   });
 
-  const { errors, isSubmitting } = formState;
+  console.log("error", errors);
 
-  console.log("errors", errors);
-  console.log("isSubmitting", isSubmitting);
-
-  const handleSubmitData = async (data: any) => {
-    console.log("submit", data);
-
-    await asyncFunction();
+  const handleForm = (data: FormProps) => {
+    console.log(data);
   };
 
-  // useEffect(() => {
-  //   setFocus("password");
-  // }, [setFocus]);
-
   return (
-    <S.Container>
-      <form onSubmit={handleSubmit(handleSubmitData)}>
-        <h2>Reset Password</h2>
+    <div>
+      <h2>Zod</h2>
 
+      <form onSubmit={handleSubmit(handleForm)}>
         <input
+          type="text"
           {...register("password")}
-          autoFocus
-          type="password"
-          name="password"
-          id="password"
-          placeholder="Senha"
+          placeholder="Informe sua senha"
         />
-        {errors.password && <p>{errors.password.message}</p>}
+        {errors.password?.message && <p>{errors.password.message}</p>}
         <input
+          type="text"
           {...register("confirmPassword")}
-          type="password"
-          name="confirmPassword"
-          id="confirmPassword"
-          placeholder="Confirmação de senha"
+          placeholder="Confirme sua senha"
         />
-        {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+        {errors.confirmPassword?.message && (
+          <p>{errors.confirmPassword.message}</p>
+        )}
 
-        <button disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Enviando..." : "Enviar"}
-        </button>
+        <button type="submit">Enviar</button>
       </form>
-    </S.Container>
+    </div>
   );
 }
 
