@@ -6,3 +6,19 @@ export const Container = styled.div`
   align-items: center;
   padding: 0.8rem 1rem;
 `;
+
+export const Button = styled.button`
+  background-color: #00a2ff;
+  width: 100%;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+`;
+
+export const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 500px;
+`;
