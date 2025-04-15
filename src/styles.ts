@@ -22,3 +22,12 @@ export const Form = styled.form`
   gap: 5px;
   width: 500px;
 `;
+
+export const BillContainer = styled.div`
+  display: flex;
+  gap: 5px;
+
+  & button {
+    height: 50px;
+  }
+`;
