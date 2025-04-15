@@ -9,7 +9,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 
 export const Checkbox = forwardRef<HTMLInputElement, InputProps>(
   (
-    { type = "text", label = "", helperText = "", name = "", ...props },
+    { type = "checkbox", label = "", helperText = "", name = "", ...props },
     ref
   ) => {
     const inputId = useId();
